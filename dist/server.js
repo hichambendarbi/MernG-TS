@@ -17,56 +17,51 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const express_graphql_1 = __importDefault(require("express-graphql"));
 const graphql_1 = require("graphql");
-// import  { buildSchema } from "graphql"
-// schema and
-const users = [];
+const User_model_1 = require("./models/User.model");
+// var users : any = []
 var schema = graphql_1.buildSchema(`
-
-type User {
+type USER {
     _id: ID!
     name: String!
     email: String!
-    date: String!
+    date : String!
 }
 
 input UserInput {
     name: String!
     email: String!
-    date: String!
+    date : String!
 }
 
 type RootQuery {
-users: [User!]!
+users: [USER!]!
 }
 
 type RootMutation {
-    createUser(userInput: UserInput) : User
+    createUser(userInput: UserInput) : USER
 }
 
 schema {
     query:RootQuery
     mutation:RootMutation
 }
-
 `);
 var root = {
-    users: () => {
+    users: () => __awaiter(void 0, void 0, void 0, function* () {
+        const users = yield User_model_1.USER.find();
         return users;
-    },
-    createUser: (args) => {
-        const user = {
-            _id: Math.random().toString(),
-            name: args.userInput.name,
-            email: args.userInput.email,
-            date: args.userInput.date
-        };
-        users.push(user);
-        return user;
-    }
+    }),
+    createUser: ({ userInput }) => __awaiter(void 0, void 0, void 0, function* () {
+        const user = new User_model_1.USER({
+            name: userInput.name,
+            email: userInput.email,
+            date: userInput.date
+        });
+        console.log(user);
+        const newUser = yield user.save();
+        return newUser;
+    })
 };
-/**
- * Allows to start an Express server
- */
 class Server {
     constructor(port) {
         this.port = port;

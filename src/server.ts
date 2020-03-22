@@ -3,9 +3,9 @@ import bodyParser from "body-parser"
 import mongoose from "mongoose"
 import graphQLHTTP from "express-graphql";
 import {buildSchema} from "graphql";
-import {USER} from '../models/User.model'
+import {USER} from './models/User.model'
 
-var users : any = []
+// var users : any = []
 
 
 var schema = buildSchema(`
@@ -34,14 +34,15 @@ schema {
     query:RootQuery
     mutation:RootMutation
 }
-
 `);
 
 var root = {
-    users: () => {
+    users: async () => {
+      const users = await USER.find();
       return users;
     },
-    createUser: ({ userInput }: any) => {
+    
+    createUser: async ({ userInput }: any) => {
     const user = new USER({
         name : userInput.name,
         email: userInput.email,
@@ -49,7 +50,7 @@ var root = {
     });
     console.log(user)
     
- const newUser =   user.save();
+ const newUser = await user.save();
  return newUser;
   }
 }
@@ -57,7 +58,6 @@ var root = {
 export default class Server {
     // private variable named "port" and its type must be number
     private port: number
-
 
     constructor(port:number){
         this.port = port;
