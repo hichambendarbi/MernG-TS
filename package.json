@@ -6,7 +6,6 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "concurrently -k -n \"Typescript,NodeJS\" -p \"[{name}]\" -c \"blue,green\" \"tsc --watch\" \"nodemon dist/index.js\""
-   
   },
   "author": "hichambendarbi",
   "license": "MIT",
@@ -28,6 +27,7 @@
     "express-graphql": "^0.9.0",
     "graphql": "^14.6.0",
     "mongoose": "^5.9.5",
-    "node-config-ts": "^3.0.4"
+    "node-config-ts": "^3.0.4",
+    "request": "^2.88.2"
   }
 }
