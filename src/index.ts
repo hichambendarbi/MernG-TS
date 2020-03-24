@@ -8,6 +8,9 @@ import Server from './server'
 // const port = 5000
 // const mongoURI = "mongodb+srv://hicham123:hicham123@cluster0-fgwnk.mongodb.net/test?retryWrites=true&w=majority"
 // Instanciate a new Server
+
+
+
 const server = new Server(9000);
 server.connect("mongodb+srv://hicham123:hicham123@cluster0-fgwnk.mongodb.net/test?retryWrites=true&w=majority");
 server.start();

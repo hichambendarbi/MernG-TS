@@ -80,12 +80,37 @@ class Server {
         }));
         // route for GET /
         // returns a string to the client
-        app.get('/', (request, response) => {
-            response.send("Hello user");
+        app.get('/', (request, response) => __awaiter(this, void 0, void 0, function* () {
+            const users = yield User_model_1.USER.find();
+            response.json(users);
+            response.send(users);
+        }));
+        app.use((req, res, next) => {
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
+            res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+            if (req.method === 'OPTIONS') {
+                return res.sendStatus(200);
+            }
+            next();
         });
         // Server is listening to port defined when Server was initiated
         app.listen(this.port, () => {
             console.log("Server is running on port " + this.port);
+        });
+    }
+    // Access to backend from http://localhost:3000
+    access() {
+        const app = express_1.default();
+        console.log("testttttttttttttt");
+        app.use((req, res, next) => {
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
+            res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+            if (req.method === 'OPTIONS') {
+                return res.sendStatus(200);
+            }
+            next();
         });
     }
     connect(db) {

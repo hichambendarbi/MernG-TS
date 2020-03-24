@@ -75,19 +75,49 @@ export default class Server {
             rootValue: root,
             graphiql: true
         }))
+
         // route for GET /
         // returns a string to the client
-        app.get('/', (request: express.Request, response: express.Response) => {
-            response.send("Hello user");
+        app.get('/', async (request: express.Request, response: express.Response) => {
+            const users = await USER.find();
+            response.json(users);
+            response.send(users);
         });
 
+
+        app.use((req, res, next) => {
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
+            res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+            if(req.method === 'OPTIONS') {
+                return res.sendStatus(200);
+            }
+            next();
+        })
 
         // Server is listening to port defined when Server was initiated
         app.listen(this.port, () => {
             console.log("Server is running on port " + this.port);
         });
+
+       
     }
 
+
+            // Access to backend from http://localhost:3000
+            public access(): void {
+                const app = express();
+                console.log("testttttttttttttt")
+                app.use((req, res, next) => {
+                    res.setHeader('Access-Control-Allow-Origin', '*');
+                    res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
+                    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+                    if(req.method === 'OPTIONS') {
+                        return res.sendStatus(200);
+                    }
+                    next();
+                })
+            }
 
     public connect(db: string): void {
         const connect = async () => {
