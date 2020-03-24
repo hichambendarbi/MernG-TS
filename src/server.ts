@@ -43,15 +43,13 @@ var root = {
     },
     
     createUser: async ({ userInput }: any) => {
-    const user = new USER({
-        name : userInput.name,
-        email: userInput.email,
-        date : userInput.date
-    });
-    console.log(user)
-    
- const newUser = await user.save();
- return newUser;
+        const user = new USER({
+            name : userInput.name,
+            email: userInput.email,
+            date : userInput.date
+        });
+        const newUser = await user.save();
+        return newUser;
   }
 }
 
@@ -69,13 +67,22 @@ export default class Server {
     public start(): void {
         const app = express();
         app.use(bodyParser.json());
-        this.access();
+        app.use((req, res, next) => {
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
+            res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+            if(req.method === 'OPTIONS') {
+                return res.sendStatus(200);
+            }
+            next();
+        })
         app.use(bodyParser.urlencoded({ extended: true }));
-        app.use('/graphql', graphQLHTTP({
+        app.all('/graphql', graphQLHTTP({
             schema: schema,
             rootValue: root,
             graphiql: true
-        }))
+        })
+        )
 
         // route for GET /
         // returns a string to the client
@@ -94,20 +101,7 @@ export default class Server {
     }
 
 
-            // Access to backend from http://localhost:3000
-            public access(): void {
-                const app = express();
-                console.log("testttttttttttttt")
-                app.use((req, res, next) => {
-                    res.setHeader('Access-Control-Allow-Origin', '*');
-                    res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
-                    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-                    if(req.method === 'OPTIONS') {
-                        return res.sendStatus(200);
-                    }
-                    next();
-                })
-            }
+            
 
     public connect(db: string): void {
         const connect = async () => {

@@ -57,7 +57,6 @@ var root = {
             email: userInput.email,
             date: userInput.date
         });
-        console.log(user);
         const newUser = yield user.save();
         return newUser;
     })
@@ -72,8 +71,17 @@ class Server {
     start() {
         const app = express_1.default();
         app.use(body_parser_1.default.json());
+        app.use((req, res, next) => {
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
+            res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+            if (req.method === 'OPTIONS') {
+                return res.sendStatus(200);
+            }
+            next();
+        });
         app.use(body_parser_1.default.urlencoded({ extended: true }));
-        app.use('/graphql', express_graphql_1.default({
+        app.all('/graphql', express_graphql_1.default({
             schema: schema,
             rootValue: root,
             graphiql: true
@@ -85,32 +93,9 @@ class Server {
             response.json(users);
             response.send(users);
         }));
-        app.use((req, res, next) => {
-            res.setHeader('Access-Control-Allow-Origin', '*');
-            res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
-            res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-            if (req.method === 'OPTIONS') {
-                return res.sendStatus(200);
-            }
-            next();
-        });
         // Server is listening to port defined when Server was initiated
         app.listen(this.port, () => {
             console.log("Server is running on port " + this.port);
-        });
-    }
-    // Access to backend from http://localhost:3000
-    access() {
-        const app = express_1.default();
-        console.log("testttttttttttttt");
-        app.use((req, res, next) => {
-            res.setHeader('Access-Control-Allow-Origin', '*');
-            res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
-            res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-            if (req.method === 'OPTIONS') {
-                return res.sendStatus(200);
-            }
-            next();
         });
     }
     connect(db) {
