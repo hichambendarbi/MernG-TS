@@ -69,6 +69,7 @@ export default class Server {
     public start(): void {
         const app = express();
         app.use(bodyParser.json());
+        this.access();
         app.use(bodyParser.urlencoded({ extended: true }));
         app.use('/graphql', graphQLHTTP({
             schema: schema,
@@ -83,17 +84,6 @@ export default class Server {
             response.json(users);
             response.send(users);
         });
-
-
-        app.use((req, res, next) => {
-            res.setHeader('Access-Control-Allow-Origin', '*');
-            res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
-            res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-            if(req.method === 'OPTIONS') {
-                return res.sendStatus(200);
-            }
-            next();
-        })
 
         // Server is listening to port defined when Server was initiated
         app.listen(this.port, () => {
