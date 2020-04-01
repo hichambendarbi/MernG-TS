@@ -13,6 +13,10 @@ const UserSchema = new mongoose_1.Schema({
     date: {
         type: Date,
         required: true
+    },
+    password: {
+        type: String,
+        required: true
     }
 });
 exports.USER = mongoose_1.model("USER", UserSchema);

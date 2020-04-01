@@ -15,52 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const mongoose_1 = __importDefault(require("mongoose"));
-const express_graphql_1 = __importDefault(require("express-graphql"));
-const graphql_1 = require("graphql");
-const User_model_1 = require("./models/User.model");
-// var users : any = []
-var schema = graphql_1.buildSchema(`
-type USER {
-    _id: ID!
-    name: String!
-    email: String!
-    date : String!
-}
-
-input UserInput {
-    name: String!
-    email: String!
-    date : String!
-}
-
-type RootQuery {
-users: [USER!]!
-}
-
-type RootMutation {
-    createUser(userInput: UserInput) : USER
-}
-
-schema {
-    query:RootQuery
-    mutation:RootMutation
-}
-`);
-var root = {
-    users: () => __awaiter(void 0, void 0, void 0, function* () {
-        const users = yield User_model_1.USER.find();
-        return users;
-    }),
-    createUser: ({ userInput }) => __awaiter(void 0, void 0, void 0, function* () {
-        const user = new User_model_1.USER({
-            name: userInput.name,
-            email: userInput.email,
-            date: userInput.date
-        });
-        const newUser = yield user.save();
-        return newUser;
-    })
-};
+const routes_1 = __importDefault(require("./routes"));
 class Server {
     constructor(port) {
         this.port = port;
@@ -71,28 +26,8 @@ class Server {
     start() {
         const app = express_1.default();
         app.use(body_parser_1.default.json());
-        app.use((req, res, next) => {
-            res.setHeader('Access-Control-Allow-Origin', '*');
-            res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
-            res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-            if (req.method === 'OPTIONS') {
-                return res.sendStatus(200);
-            }
-            next();
-        });
         app.use(body_parser_1.default.urlencoded({ extended: true }));
-        app.all('/graphql', express_graphql_1.default({
-            schema: schema,
-            rootValue: root,
-            graphiql: true
-        }));
-        // route for GET /
-        // returns a string to the client
-        app.get('/', (request, response) => __awaiter(this, void 0, void 0, function* () {
-            const users = yield User_model_1.USER.find();
-            response.json(users);
-            response.send(users);
-        }));
+        app.use('/', routes_1.default(express_1.default.Router()));
         // Server is listening to port defined when Server was initiated
         app.listen(this.port, () => {
             console.log("Server is running on port " + this.port);

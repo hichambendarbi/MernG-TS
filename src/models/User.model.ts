@@ -4,6 +4,7 @@ interface IUserModel extends Document {
     email : UserEmail
     name : UserName
     date : UserDate
+    password: UserPassword
 }
 
 const UserSchema : Schema = new Schema({
@@ -18,6 +19,10 @@ const UserSchema : Schema = new Schema({
     },
     date : {
         type : Date,
+        required : true
+    },
+    password : {
+        type : String,
         required : true
     }
 
